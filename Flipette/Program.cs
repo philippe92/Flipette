@@ -35,15 +35,7 @@ public class Program
         Parallel.ForEach(json, options, item =>
         {
             var itemid = Interlocked.Increment(ref current);
-            var gridlist = JsonConvert.DeserializeObject<object[]>(item.grid_json.ToString());
-            var data = new List<string>();
-
-            foreach (var g in gridlist)
-            {
-                data.Add(g.ToString());
-            }
-
-            var game = new Game(data, (int)item.grid_size, itemid);
+            var game = PrepareGame(item.grid_json.ToString(), (int)item.grid_size, itemid);
             if (game.Run())
             {
                 item.grid_bestscore = game.BestScore;
@@ -63,5 +55,18 @@ public class Program
 
         var diff = DateTime.Now.Subtract(startTime);
         Console.WriteLine($"Temps de calcul total : {diff}");
+    }
+
+    static public Game PrepareGame(string strdata, int size, int itemid)
+    {
+        var gridlist = JsonConvert.DeserializeObject<object[]>(strdata);
+        var data = new List<string>();
+
+        foreach (var g in gridlist)
+        {
+            data.Add(g.ToString());
+        }
+
+        return new Game(data,size , itemid);
     }
 }
