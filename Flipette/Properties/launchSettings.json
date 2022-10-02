@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Flipette": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Local\\grille5.json"
+    }
+  }
+}
