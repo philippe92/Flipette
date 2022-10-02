@@ -2,24 +2,73 @@
 {
     public class Game
     {
+        public enum OperationList
+        {
+            ADD0,
+            ADD1,
+            ADD2,
+            ADD3,
+            ADD4,
+            ADD5,
+            ADD6,
+            ADD7,
+            ADD8,
+            ADD9,
+            ADD10,
+            MULT2,
+            MULT3,
+            MULT4,
+            MULT5,
+            DIV2,
+            FLIP,
+            START,
+            END
+        }
+
         private List<string> _data;
         private int _l;
         private int _start;
         private long _nbpathes;
         private int _itemid;
+        private List<OperationList> _converteddata;
+
+        private static OperationList OpConvert(string s) => s switch
+        {
+            "0" => OperationList.ADD0,
+            "1" => OperationList.ADD1,
+            "2" => OperationList.ADD2,
+            "3" => OperationList.ADD3,
+            "4" => OperationList.ADD4,
+            "5" => OperationList.ADD5,
+            "6" => OperationList.ADD6,
+            "7" => OperationList.ADD7,
+            "8" => OperationList.ADD8,
+            "9" => OperationList.ADD9,
+            "10" => OperationList.ADD10,
+            "* 2" => OperationList.MULT2,
+            "* 3" => OperationList.MULT3,
+            "* 4" => OperationList.MULT4,
+            "* 5" => OperationList.MULT5,
+            "/2" => OperationList.DIV2,
+            "M" => OperationList.FLIP,
+            "S" => OperationList.START,
+            "F" => OperationList.END,
+            _ => throw new ArgumentOutOfRangeException(nameof(s), $"Not expected Operation value: {s}"),
+        };
 
         public Game(List<string> data, int l, int itemid)
         {
             _data = data;
             _l = l;
             _itemid = itemid;
-            
-            for(int i=0; i<l*l ; i++)
+            _converteddata = new List<OperationList>();
+
+            for (int i=0; i<l*l ; i++)
             {
+                _converteddata.Add(OpConvert(_data[i]));
                 if (_data[i]=="S")
                 {
                     _start = i;
-                    break;
                 }
             }
         }
@@ -97,61 +146,72 @@
             return true;
         }
 
-        private static string Reverse(string s)
+        public bool CalculateScore(OperationList o, ref long current)
         {
-            char[] charArray = s.ToCharArray();
-            Array.Reverse(charArray);
-            return new string(charArray);
-        }
-
-        public bool CalculateScore(string s, ref long current)
-        {
-            if (s.Length == 1)
+            switch (o)
             {
-                var c = s[0];
-                if (c>='0' && c<='9')
-                {
-                    current += c - '0';
+                case OperationList.ADD0:
                     return false;
-                }
-            }
-
-            if (s == "10")
-            {
-                current += 10;
-                return false;
-            }
-
-            switch (s)
-            {
-                case "* 2":
+                case OperationList.ADD1:
+                    current += 1;
+                    return false;
+                case OperationList.ADD2:
+                    current += 2;
+                    return false;
+                case OperationList.ADD3:
+                    current += 3;
+                    return false;
+                case OperationList.ADD4:
+                    current += 4;
+                    return false;
+                case OperationList.ADD5:
+                    current += 5;
+                    return false;
+                case OperationList.ADD6:
+                    current += 6;
+                    return false;
+                case OperationList.ADD7:
+                    current += 7;
+                    return false;
+                case OperationList.ADD8:
+                    current += 8;
+                    return false;
+                case OperationList.ADD9:
+                    current += 9;
+                    return false;
+                case OperationList.ADD10:
+                    current += 10;
+                    return false;
+                case OperationList.MULT2:
                     current *= 2;
                     return false;
-                case "* 3":
+                case OperationList.MULT3:
                     current *= 3;
                     return false;
-                case "* 4":
+                case OperationList.MULT4:
                     current *= 4; 
                     return false;
-                case "* 5":
+                case OperationList.MULT5:
                     current *= 5;
                     return false;
-                case "/2":
+                case OperationList.DIV2:
                     current /= 2;
                     return false;
-                case "M":
-                    var str = current.ToString();
-                    string str2 = Reverse(str);
-                    if (!long.TryParse(str2, out current))
+                case OperationList.FLIP:
+                    long reverse = 0;
+                    while (current > 0)
                     {
-                        throw new Exception($"Flip impossible!!!!! {str} - {str2}");
+                        reverse *= 10;
+                        reverse += current % 10;
+                        current /= 10;
                     }
+                    current = reverse;
                     return false;
-                case "F":
+                case OperationList.END:
                     return true;
-
+                default:
+                    throw new Exception($"Not Handled Operation");
             }
-            throw new Exception($"Valeur inconnue!!!!! {s}");
         }
 
         private bool CalculateStep(int pos, long currentScore, bool[] done, ref List<int>? path, ref long newMaxScore)
@@ -163,7 +223,7 @@
                 return false;
             }
 
-            if (CalculateScore(_data[pos], ref currentScore))
+            if (CalculateScore(_converteddata[pos], ref currentScore))
             {
                 // Fin trouvé, condition d'arret de la boucle récursive
                 newPath = new List<int> { pos };

@@ -24,7 +24,7 @@ namespace FlipetteTest
             var game = Program.PrepareGame(data, 7, 1);
             game.Run();
             Assert.That(game.BestScore, Is.EqualTo(898824011));
-            Assert.That(game.BestPath.Count, Is.EqualTo(368926155));
+            Assert.That(game.BestPath.Count, Is.EqualTo(40));
         }
     }
 }
