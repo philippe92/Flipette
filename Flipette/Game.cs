@@ -2,13 +2,13 @@
 {
     public class Game
     {
-        private string[] _data;
+        private List<string> _data;
         private int _l;
         private int _start;
         private long _nbpathes;
         private int _itemid;
 
-        public Game(string[] data, int l, int itemid)
+        public Game(List<string> data, int l, int itemid)
         {
             _data = data;
             _l = l;
@@ -43,7 +43,7 @@
 
         public bool Run()
         {
-            Console.WriteLine($"[{_itemid}] Démarrage");
+            Console.WriteLine($"[{_itemid:000}] Démarrage");
             var startTime = DateTime.Now;
             var done = new bool[_l * _l];
             long score = 0;
@@ -54,8 +54,8 @@
             }
 
             var diff = DateTime.Now.Subtract(startTime);
-            Console.WriteLine($"Meilleur score trouvé : {score:##,#}");
-            Console.WriteLine($"Nb de chemins parcourus : {_nbpathes:##,#}");
+            Console.WriteLine($"[{_itemid:000}] Meilleur score trouvé : {score:##,#}");
+            Console.WriteLine($"[{_itemid:000}] Nb de chemins parcourus : {_nbpathes:##,#}");
 
             if (chemin == null)
             {
@@ -90,7 +90,7 @@
                 Console.WriteLine();
             }*/
 
-            Console.WriteLine($"[{_itemid}] Temps de calcul : {diff}");
+            Console.WriteLine($"[{_itemid:000}] Temps de calcul : {diff}");
 
             BestScore = score;
             BestPath = chemin;
@@ -114,6 +114,12 @@
                     current += c - '0';
                     return false;
                 }
+            }
+
+            if (s == "10")
+            {
+                current += 10;
+                return false;
             }
 
             switch (s)
@@ -164,7 +170,7 @@
                 _nbpathes++;
                 if (_nbpathes % 10000000 == 0)
                 {
-                    Console.WriteLine($"[{_itemid}] {_nbpathes:##,#} fait, environ {_nbpathes*100/275000000} %");
+                    Console.WriteLine($"[{_itemid:000}] {_nbpathes:##,#} fait, environ {_nbpathes*100/275000000} %");
                 }
             }
             else

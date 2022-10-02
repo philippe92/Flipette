@@ -29,28 +29,29 @@ public class Program
         int current = 0;
         var startTime = DateTime.Now;
 
-        Parallel.ForEach(json, item =>
+        var options = new ParallelOptions();
+        options.MaxDegreeOfParallelism = 20;
+
+        Parallel.ForEach(json, options, item =>
         {
             var itemid = Interlocked.Increment(ref current);
             var gridlist = JsonConvert.DeserializeObject<object[]>(item.grid_json.ToString());
-            string[] data = new string[gridlist.Length];
+            var data = new List<string>();
 
-            int i = 0;
             foreach (var g in gridlist)
             {
-                data[i] = g.ToString();
-                i++;
+                data.Add(g.ToString());
             }
 
             var game = new Game(data, (int)item.grid_size, itemid);
-            game.Run();
-            item.grid_bestscore = game.BestScore;
-            if (game.BestPath != null)
+            if (game.Run())
             {
-                item.grid_bestpath = JArray.FromObject(game.BestPath);
+                item.grid_bestscore = game.BestScore;
+                if (game.BestPath != null)
+                {
+                    item.grid_bestpath = JArray.FromObject(game.BestPath);
+                }
             }
-            current++;
-            Console.WriteLine($"Complété {itemid} / {total}");
         });
 
         string outputfilename = $"{Path.GetDirectoryName(filename)}\\{Path.GetFileNameWithoutExtension(filename)}-res{Path.GetExtension(filename)}";
