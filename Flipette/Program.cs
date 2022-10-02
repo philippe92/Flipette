@@ -1,7 +1,6 @@
 ﻿using Flipette;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
 
 public class Program
 {
@@ -30,11 +29,9 @@ public class Program
         int current = 0;
         var startTime = DateTime.Now;
 
-        var options = new ParallelOptions();
-        options.MaxDegreeOfParallelism = 24;
-
-        Parallel.ForEach(json, options, item =>
+        Parallel.ForEach(json, item =>
         {
+            var itemid = Interlocked.Increment(ref current);
             var gridlist = JsonConvert.DeserializeObject<object[]>(item.grid_json.ToString());
             string[] data = new string[gridlist.Length];
 
@@ -45,7 +42,7 @@ public class Program
                 i++;
             }
 
-            var game = new Game(data, (int)item.grid_size);
+            var game = new Game(data, (int)item.grid_size, itemid);
             game.Run();
             item.grid_bestscore = game.BestScore;
             if (game.BestPath != null)
@@ -53,7 +50,7 @@ public class Program
                 item.grid_bestpath = JArray.FromObject(game.BestPath);
             }
             current++;
-            Console.WriteLine($"Complété {current} / {total}");
+            Console.WriteLine($"Complété {itemid} / {total}");
         });
 
         string outputfilename = $"{Path.GetDirectoryName(filename)}\\{Path.GetFileNameWithoutExtension(filename)}-res{Path.GetExtension(filename)}";

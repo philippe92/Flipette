@@ -5,11 +5,14 @@
         private string[] _data;
         private int _l;
         private int _start;
-        private int _nbpathes;
-        public Game(string[] data, int l)
+        private long _nbpathes;
+        private int _itemid;
+
+        public Game(string[] data, int l, int itemid)
         {
             _data = data;
             _l = l;
+            _itemid = itemid;
             
             for(int i=0; i<l*l ; i++)
             {
@@ -40,6 +43,7 @@
 
         public bool Run()
         {
+            Console.WriteLine($"[{_itemid}] Démarrage");
             var startTime = DateTime.Now;
             var done = new bool[_l * _l];
             long score = 0;
@@ -61,7 +65,7 @@
 
             chemin.Add(_start);
             chemin.Reverse();
-            int[] table = new int[_l*_l];
+            /*int[] table = new int[_l*_l];
             bool[] iswalked = new bool[_l * _l];
             for (int i=0; i<chemin.Count; i++)
             {
@@ -84,8 +88,9 @@
                     }
                 }
                 Console.WriteLine();
-            }
-            Console.WriteLine($"Temps de calcul : {diff}");
+            }*/
+
+            Console.WriteLine($"[{_itemid}] Temps de calcul : {diff}");
 
             BestScore = score;
             BestPath = chemin;
@@ -157,6 +162,10 @@
                 // Fin trouvé, condition d'arret de la boucle récursive
                 newPath = new List<int> { pos };
                 _nbpathes++;
+                if (_nbpathes % 10000000 == 0)
+                {
+                    Console.WriteLine($"[{_itemid}] {_nbpathes:##,#} fait, environ {_nbpathes*100/275000000} %");
+                }
             }
             else
             {
